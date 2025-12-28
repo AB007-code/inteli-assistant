@@ -5,30 +5,90 @@ const { askGemini } = require("../utils/gemini.js");
 exports.askQuestion = async (req, res) => {
   try {
     const { question } = req.body;
-
     if (!question) {
       return res.status(400).json({ message: "Question is required" });
     }
 
-    const docs = await Document.find({ userId: req.user.id });
+    const previousChats = await QueryHistory.find({
+      userId: req.user.id,
+    })
+      .sort({ createdAt: -1 })
+      .limit(5);
 
-    if (docs.length === 0) {
+    const conversationMemory = previousChats
+      .map(
+        (c) => `Previous Question: ${c.question}\nPrevious Answer: ${c.answer}`
+      )
+      .join("\n");
+
+    const allDocs = await Document.find({ userId: req.user.id });
+
+    if (allDocs.length === 0) {
       return res.json({
-        answer: "No documents uploaded",
+        answer: "Information not available in uploaded documents.",
         references: [],
       });
     }
-    const context = docs
+
+    const keywords = question.toLowerCase().split(/\s+/);
+
+    const matchedDocs = allDocs.filter((doc) =>
+      keywords.some((word) => doc.content.toLowerCase().includes(word))
+    );
+
+    if (matchedDocs.length === 0) {
+      return res.json({
+        answer: "Information not available in uploaded documents.",
+        references: [],
+      });
+    }
+
+    const documentContext = matchedDocs
       .map(
-        (d) =>
-          `Document: ${d.fileName}\nContent:\n${d.content.substring(0, 1500)}`
+        (doc) =>
+          `DOCUMENT NAME: ${
+            doc.fileName
+          }\nDOCUMENT TEXT:\n${doc.content.substring(0, 1500)}`
       )
       .join("\n\n");
-    const answer = await askGemini(context, question);
-    const references = docs.map((d) => ({
-      document: d.fileName,
-      excerpt: d.content.substring(0, 200),
-    }));
+
+    const combinedContext = `
+CHAT HISTORY (FOR CONTEXT ONLY):
+${conversationMemory}
+
+DOCUMENT CONTEXT (SOURCE OF TRUTH):
+${documentContext}
+`;
+
+    const rawAnswer = await askGemini(combinedContext, question);
+
+    // 6️⃣ Extract USED_DOCUMENTS
+    let usedDocs = [];
+    let answer = rawAnswer;
+
+    const match = rawAnswer.match(/USED_DOCUMENTS:\s*(\[[^\]]*\])/);
+    if (match) {
+      usedDocs = JSON.parse(match[1]);
+      answer = rawAnswer.replace(match[0], "").trim();
+    }
+
+    const references = matchedDocs
+      .filter((doc) => usedDocs.includes(doc.fileName))
+      .map((doc) => ({
+        document: doc.fileName,
+        excerpt: doc.content.substring(0, 200),
+      }));
+
+    if (
+      answer === "Information not available in uploaded documents." ||
+      references.length === 0
+    ) {
+      return res.json({
+        answer: "Information not available in uploaded documents.",
+        references: [],
+      });
+    }
+
     await QueryHistory.create({
       userId: req.user.id,
       question,
@@ -46,11 +106,11 @@ exports.askQuestion = async (req, res) => {
 exports.getHistory = async (req, res) => {
   try {
     const history = await QueryHistory.find({ userId: req.user.id }).sort({
-      createdAt: -1,
+      createdAt: 1,
     });
 
     res.json(history);
-  } catch {
-    res.status(500).json({ message: "Failed to fetch history" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch chat history" });
   }
 };
