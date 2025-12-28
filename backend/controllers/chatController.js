@@ -31,7 +31,6 @@ exports.askQuestion = async (req, res) => {
     }
 
     const keywords = question.toLowerCase().split(/\s+/);
-
     const matchedDocs = allDocs.filter((doc) =>
       keywords.some((word) => doc.content.toLowerCase().includes(word))
     );
@@ -59,13 +58,9 @@ ${conversationMemory}
 DOCUMENT CONTEXT (SOURCE OF TRUTH):
 ${documentContext}
 `;
-
     const rawAnswer = await askGemini(combinedContext, question);
-
-    // 6️⃣ Extract USED_DOCUMENTS
     let usedDocs = [];
     let answer = rawAnswer;
-
     const match = rawAnswer.match(/USED_DOCUMENTS:\s*(\[[^\]]*\])/);
     if (match) {
       usedDocs = JSON.parse(match[1]);
