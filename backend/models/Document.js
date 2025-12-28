@@ -1,17 +1,12 @@
 const mongoose = require("mongoose");
 
 const documentSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-  },
+  userId: mongoose.Schema.Types.ObjectId,
   fileName: String,
-  filePath: String,
   content: String,
-  status: {
-    type: String,
-    default: "processed",
-  },
+  fileData: Buffer,
+  fileType: String,
+  status: { type: String, default: "processed" },
 });
 
 module.exports = mongoose.model("Document", documentSchema);
