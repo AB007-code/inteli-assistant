@@ -1,16 +1,123 @@
-# React + Vite
+# Document Intelligence & Knowledge Search Hub – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend application for the Document Intelligence and Knowledge Search Hub.  
+It allows users to upload documents, view uploaded files, and interact with an AI chat interface that answers questions strictly based on uploaded documents.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+- User Signup & Login
+- Clean navigation with conditional auth buttons
+- Document upload with clear visual upload area
+- Dashboard with clickable document list
+- Secure document preview in a new tab
+- ChatGPT-style conversational UI
+- Inline chat history (no separate history page)
+- AI response loading state (Thinking…)
+- Document-backed answers with selective references
+- Responsive and clean Tailwind CSS design
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React (Vite)
+- Tailwind CSS
+- Axios
+- React Router DOM
+
+---
+
+## 📁 Project Structure
+
+---
+
+# 📘 Frontend README (`frontend/README.md`)
+
+```md
+# Document Intelligence & Knowledge Search Hub – Frontend
+
+This is the frontend application for the Document Intelligence and Knowledge Search Hub.  
+It allows users to upload documents, view uploaded files, and interact with an AI chat interface that answers questions strictly based on uploaded documents.
+
+---
+
+## 🚀 Features
+
+- User Signup & Login
+- Clean navigation with conditional auth buttons
+- Document upload with clear visual upload area
+- Dashboard with clickable document list
+- Secure document preview in a new tab
+- ChatGPT-style conversational UI
+- Inline chat history (no separate history page)
+- AI response loading state (Thinking…)
+- Document-backed answers with selective references
+- Responsive and clean Tailwind CSS design
+
+---
+
+## 🛠 Tech Stack
+
+- React (Vite)
+- Tailwind CSS
+- Axios
+- React Router DOM
+
+---
+
+## 📁 Project Structure
+
+frontend/
+├── src/
+│ ├── pages/
+│ │ ├── Home.jsx
+│ │ ├── Dashboard.jsx
+│ │ ├── Chat.jsx
+│ │ ├── History.jsx  
+│ │ ├── Login.jsx
+│ │ └── Signup.jsx
+│ ├── components/
+│ │ ├── Navbar.jsx
+│ │ └── ProtectedRoute.jsx
+│ ├── services/
+│ │ └── api.js
+│ ├── utils/
+│ │ └── auth.js  
+│ ├── App.jsx
+│ └── main.jsx
+├── index.html
+└── vite.config.js
+
+# ▶️ Run the Frontend
+
+npm install
+npm run dev
+
+# Run in browser
+
+http://localhost:5173/
+
+# API Configuration
+
+baseURL: "http://localhost:5000/api"
+JWT token is stored in localStorage and attached to each request automatically.
+
+# 💬 Chat Behavior
+
+- User input is disabled while AI is responding
+- A temporary “Thinking…” message is shown
+- Previous chats are loaded on page revisit
+- Follow-up questions work using conversation memory
+- References are displayed only for relevant documents
+
+# 🧪 Sample User Flow
+
+- Signup / Login
+- Upload PDF or TXT document
+- View uploaded documents in Dashboard
+- Click document to open in a new tab
+- Ask questions in Chat page
+- Receive AI answers with document references
+```
